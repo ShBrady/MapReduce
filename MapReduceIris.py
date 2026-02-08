@@ -12,23 +12,24 @@ class MRProb2_3(MRJob):
 
     def steps(self):
         return [
-            MRStep(mapper=self.mapper_get_sepW_setosa,
+            MRStep(mapper=self.mapper_get_sepW_all,
                    reducer=self.reducer_get_avg)
         ]
 
-    def mapper_get_sepW_setosa(self, _, line):
-        # yield each petal width
+    def mapper_get_sepW_all(self, _, line):
+        # yield sepal width for all species
         data = DATA_RE.findall(line)
-        if "Iris-setosa" in data:
-            sep_W = float(data[1])
-            yield ("sepal width", sep_W)
+        if len(data) >= 5:
+            species = data[4]  # Get the species name
+            sep_W = float(data[1])  # Get sepal width
+            yield (species, sep_W)
 
     def reducer_get_avg(self, key, values):
-        # get max of the petal widths
+        # get average sepal width for each species
         size, total = 0, 0
         for val in values:
             size += 1
             total += val
-        yield ("setosa sepal width avg", round(total,1) / size)
+        yield (f"{key} - sepal width avg", round(total / size, 2))
 if __name__ == '__main__':
     MRProb2_3.run()
