@@ -12,24 +12,24 @@ class MRProb2_3(MRJob):
 
     def steps(self):
         return [
-            MRStep(mapper=self.mapper_get_sepW_all,
+            MRStep(mapper=self.mapper_get_alcohol_all,
                    reducer=self.reducer_get_avg)
         ]
 
-    def mapper_get_sepW_all(self, _, line):
-        # yield sepal width for all species
+    def mapper_get_alcohol_all(self, _, line):
+        # yield alcohol content for all classes
         data = DATA_RE.findall(line)
-        if len(data) >= 5:
-            species = data[4]  # Get the species name
-            sep_W = float(data[1])  # Get sepal width
-            yield (species, sep_W)
+        if len(data) >= 14:
+            classes = data[0]  # Get the species name
+            alcohol = float(data[1])  # Get alcohol content
+            yield (classes, alcohol)
 
     def reducer_get_avg(self, key, values):
-        # get average sepal width for each species
+        # get average alcohol content for each class
         size, total = 0, 0
         for val in values:
             size += 1
             total += val
-        yield (f"{key} - sepal width avg", round(total / size, 2))
+        yield (f"Class {key} - alcohol content avg", round(total / size, 2))
 if __name__ == '__main__':
     MRProb2_3.run()
