@@ -31,5 +31,6 @@ class MRProb2_3(MRJob):
             size += 1
             total += val
         yield (f"Class {key} - alcohol content avg", round(total / size, 2))
+
 if __name__ == '__main__':
     MRProb2_3.run()
